@@ -115,10 +115,12 @@
 <meta property="og:site_name" content="ZSpirytus的博客">
 <meta property="og:description" content="0. 前言最近学习了Lua语言，记录一下自己觉得对几个重要概念的学习过程。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-28T12:46:00.140Z">
+<meta property="og:image" content="/lua-impression/cover.jpg">
+<meta property="og:updated_time" content="2019-08-04T15:04:40.411Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Lua语言学习笔记">
 <meta name="twitter:description" content="0. 前言最近学习了Lua语言，记录一下自己觉得对几个重要概念的学习过程。">
+<meta name="twitter:image" content="/lua-impression/cover.jpg">
 
 
 
@@ -382,7 +384,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-28 20:46:00" itemprop="dateModified" datetime="2019-07-28T20:46:00+08:00">2019-07-28</time>
+                <time title="修改时间：2019-08-04 23:04:40" itemprop="dateModified" datetime="2019-08-04T23:04:40+08:00">2019-08-04</time>
               
             
           </span>
@@ -426,7 +428,8 @@
       
 
       
-        <h1 id="0-前言"><a href="#0-前言" class="headerlink" title="0. 前言"></a>0. 前言</h1><p>最近学习了Lua语言，记录一下自己觉得对几个重要概念的学习过程。</p>
+        <img src="/lua-impression/cover.jpg">
+<h1 id="0-前言"><a href="#0-前言" class="headerlink" title="0. 前言"></a>0. 前言</h1><p>最近学习了Lua语言，记录一下自己觉得对几个重要概念的学习过程。</p>
 <a id="more"></a>
 <h1 id="1-Table"><a href="#1-Table" class="headerlink" title="1. Table"></a>1. Table</h1><p>table是Lua语言的一个重要的数据结构。它很像一个Map，我们可以通过给出一个key来获得对应的value。并且，table的key可以是除nil以外的任意类型。看代码：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> tab = &#123;&#125;</span><br><span class="line"></span><br><span class="line">tab.a = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">tab[<span class="string">'b'</span>] = <span class="string">'233'</span></span><br><span class="line"></span><br><span class="line">tab[f] = <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'call a function'</span>)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> <span class="built_in">pairs</span>(tab) <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">string</span>.<span class="built_in">format</span>(<span class="string">'tab.%s = %s'</span>, <span class="built_in">tostring</span>(k), <span class="built_in">tostring</span>(v)))</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- Output:</span></span><br><span class="line"><span class="comment">-- tab.a = 1</span></span><br><span class="line"><span class="comment">-- tab.b = 233</span></span><br><span class="line"><span class="comment">-- tab.f = function</span></span><br></pre></td></tr></table></figure></p>
 <p>Lua的table不止于此，还有很多骚操作。</p>
@@ -655,7 +658,7 @@
                   
                     
                   
-                  <a href="https://www.zhihu.com/people/zspi/activities" title="知乎 &rarr; https://www.zhihu.com/people/zspi/activities" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                  <a href="https://www.zhihu.com/people/zspi/activities" title="知乎 &rarr; https://www.zhihu.com/people/zspi/activities" rel="noopener" target="_blank"><i class="fa fa-fw fa-zhihu"></i>知乎</a>
                 </span>
               
                 <span class="links-of-author-item">
@@ -666,7 +669,7 @@
                   
                     
                   
-                  <a href="https://juejin.im/user/5c2e2b846fb9a049a711f0fc" title="掘金 &rarr; https://juejin.im/user/5c2e2b846fb9a049a711f0fc" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>掘金</a>
+                  <a href="https://juejin.im/user/5c2e2b846fb9a049a711f0fc" title="掘金 &rarr; https://juejin.im/user/5c2e2b846fb9a049a711f0fc" rel="noopener" target="_blank"><i class="fa fa-fw fa-juejin"></i>掘金</a>
                 </span>
               
                 <span class="links-of-author-item">
@@ -677,7 +680,7 @@
                   
                     
                   
-                  <a href="https://www.jianshu.com/u/e3675ddefa74" title="简书 &rarr; https://www.jianshu.com/u/e3675ddefa74" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>简书</a>
+                  <a href="https://www.jianshu.com/u/e3675ddefa74" title="简书 &rarr; https://www.jianshu.com/u/e3675ddefa74" rel="noopener" target="_blank"><i class="fa fa-fw fa-jianshu"></i>简书</a>
                 </span>
               
             </div>
