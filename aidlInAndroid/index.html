@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1. 前言终于考完试了hhh，终于有时间更新博客了。正好之前自学跨进程编程，写个博文记录一下。">
+<meta name="keywords" content="Android,多进程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次AIDL的学习与实践">
+<meta property="og:url" content="www.zspirytus.com/aidlInAndroid/index.html">
+<meta property="og:site_name" content="ZSpirytus的博客">
+<meta property="og:description" content="1. 前言终于考完试了hhh，终于有时间更新博客了。正好之前自学跨进程编程，写个博文记录一下。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="/aidlInAndroid/aidlInAndroid_cover.jpg">
+<meta property="og:updated_time" content="2018-11-26T15:30:01.878Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记一次AIDL的学习与实践">
+<meta name="twitter:description" content="1. 前言终于考完试了hhh，终于有时间更新博客了。正好之前自学跨进程编程，写个博文记录一下。">
+<meta name="twitter:image" content="/aidlInAndroid/aidlInAndroid_cover.jpg">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ZSpirytus的博客" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="www.zspirytus.com/aidlInAndroid/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>记一次AIDL的学习与实践 | ZSpirytus的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZSpirytus的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里是ZSpirytus的个人博客</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="www.zspirytus.com/aidlInAndroid/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ZSpirytus">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/myAvatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZSpirytus的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">记一次AIDL的学习与实践
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-25 14:36:12" itemprop="dateCreated datePublished" datetime="2018-11-25T14:36:12+08:00">2018-11-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-26 23:30:01" itemprop="dateModified" datetime="2018-11-26T23:30:01+08:00">2018-11-26</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/aidlInAndroid/" class="leancloud_visitors" data-flag-title="记一次AIDL的学习与实践">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/aidlInAndroid/aidlInAndroid_cover.jpg" alt="cover"></p>
+<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>终于考完试了hhh，终于有时间更新博客了。正好之前自学跨进程编程，写个博文记录一下。</p>
+<a id="more"></a>
+<h2 id="2-Android中的多进程"><a href="#2-Android中的多进程" class="headerlink" title="2. Android中的多进程"></a>2. Android中的多进程</h2><p>在Android中，默认情况下，应用中的组件是运行在同一个进程的。我们可以在AndroidManifest.xml中使用<code>android:process</code>属性来为四大组件指定运行的进程。比如对于Service：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">service</span> <span class="attr">...</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:process</span>=<span class="string">":playMusicProcess"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">...</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br></pre></td></tr></table></figure><br>当然也可以通过JNI，在C/C++代码中调用fork()来开启进程，这里不讨论这种情况。</p>
+<p>然而，好端端的为什么要使用多进程？因为多进程相较于单进程是有好处的。<br>首先，多进程意味着更多内存空间，OOM的概率更小。DVM会给每个进程分配固定的空间。多进程意味着会被分配更多空间，因此合理利用多进程，能够减少OOM发生的概率。<br>其次，像一些功能，相对独立，只需要在后台运行，那我们可以让它运行在另一个进程中的Service，即使UI进程被杀了，这个模块也能正常运行。</p>
+<p>接下来看看多进程的实现，我使用AIDL来进行进程间的通信。</p>
+<h2 id="3-准备知识：序列化"><a href="#3-准备知识：序列化" class="headerlink" title="3. 准备知识：序列化"></a>3. 准备知识：序列化</h2><p>在跨进程通信中，从一个进程发送消息到另一个进程时，会先把消息进行序列化，通过Binder传给另一个进程，另一个进程再通过反序列化以获得消息。所以在实现跨进程通信之前，我们需要对序列化有一定的了解。<br>在Android开发中我们有两种序列化方案：<code>Serializable接口</code>和<code>Parcelable接口</code>。前者是Java自带的，后者是为Android系统量身打造的。两者各有优劣：<br><code>Serializable接口</code>使用方便，但是性能开销较大，涉及大量I/O操作。<br><code>Parcelable接口</code>性能开销小，但使用较为复杂。<br>基于性能优先的原则，我优先使用的是<code>Parcelable接口</code>。</p>
+<p>对于一个实体类Music，我们让它实现Parcelable接口：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Music</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String mMusicName;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> mMusicDuration;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Music</span><span class="params">(String musicName, <span class="keyword">long</span> musicDuration)</span> </span>&#123;</span><br><span class="line">        mMusicName = musicName;</span><br><span class="line">        mMusicDuration = musicDuration;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Music</span><span class="params">(Parcel source)</span> </span>&#123;</span><br><span class="line">        mMusicName = source.readString();</span><br><span class="line">        mMusicDuration = source.readLong();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMusicName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> musicName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getMusicDuration</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> musicDuration;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">describeContents</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeToParcel</span><span class="params">(Parcel dest, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">        dest.writeString(mMusicName);</span><br><span class="line">        dest.writeLong(mMusicDuration);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Parcelable.Creator&lt;Music&gt; CREATOR = <span class="keyword">new</span> Creator&lt;Music&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Music <span class="title">createFromParcel</span><span class="params">(Parcel source)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Music(source);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> Music[] newArray(<span class="keyword">int</span> size) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Music[size];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>实现Parcelable接口，需要定义一个CREATOR变量，并实现方法<code>describeContents()</code>和<code>writeToParcel()</code>。<br>对于变量<code>CREATOR</code>，它是Parcelable.Creator&lt;T>接口一个实现的对象。其中，<code>createFromParcel()</code>是用来反序列化出一个对象，<code>newArray()</code>是用来反序列化出一个对象的数组。这里只需要返回一个空数组即可。<br>对于方法<code>describeContents()</code>，它返回对象内容的描述，如果内容中有文件描述符(File Descriptor, fd)就返回1，否则返回0。这里返回0。<br>对于方法<code>writeToParcel()</code>，它在序列化的时候被调用。在这里面序列化需要序列化的变量。<br><blockquote><p>踩坑点： 在<code>writeToParcel</code>按ABCD的顺序序列化，在反序列化的时候也一定要按照ABCD的顺序反序列化。否则会反序列化出一个不正确的对象。</p>
+</blockquote></p>
+<p>序列化的一些注意点就基本这样。</p>
+<h2 id="4-关于AIDL"><a href="#4-关于AIDL" class="headerlink" title="4. 关于AIDL"></a>4. 关于AIDL</h2><p>AIDL是Android接口定义语言(Android Interface Definition Language, AIDL)，用于规定进程间通信的方式(这里我理解为进程间的通信协议)。<br>它和Java的接口是有些许不同的：</p>
+<ol>
+<li>AIDL不支持定义静态变量，仅支持定义方法。</li>
+<li>AIDL仅支持有限的数据类型：<ul>
+<li>基本数据类型：int, long, char, boolean, double等</li>
+<li>String和CharSequence</li>
+<li>List，仅支持ArrayList，且里面的数据必须是AIDL支持的数据类型</li>
+<li>Map，仅支持HashMap，不支持带泛型参数的Map(<a href="http://wing-linux.sourceforge.net/guide/developing/tools/aidl.html#aidlsyntax" target="_blank" rel="noopener">参考</a>)</li>
+<li>Parcelable，支持所有实现了Parcelable接口的对象</li>
+<li>AIDL，支持AIDL接口对象</li>
+</ul>
+</li>
+</ol>
+<blockquote><p>踩坑点： 在方法的参数列表中，除了基本类型和AIDL接口外，都需要标注方向in, out, inout<br>in代表数据只能从客户端流向服务端，即客户端 -&gt; 服务端<br>out代表数据只能从服务端流向客户端，即客户端 &lt;- 服务端<br>inout代表数据可以在客户端和服务端之间双向流动，即客户端 <-> 服务端</-></p>
+</blockquote>
+<p>另外，Parcelable对象需要在aidl中显式的声明和import<br>如果实体Music.java位于java文件夹中的包com.example.exampleproject.entity包下，那就需要在aidl文件夹中的包com.example.exampleproject.entity下声明Music.aidl，内容为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// Music.aidl</span><br><span class="line">package com.example.exampleproject.entity;</span><br><span class="line"></span><br><span class="line">parcelable Music;</span><br></pre></td></tr></table></figure><br>然后在需要用到Music的AIDL文件中显式import出来，无论同不同包：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import com.example.exampleproject.entity.Music;</span><br></pre></td></tr></table></figure></p>
+<blockquote><p>如果你用Android Studio来编写AIDL文件，那你就暂时把AS当成文本编辑器吧，不要指望它会帮你代码补全，自动import相关包…</p>
+</blockquote>
+<p>所以，一个正确的AIDL文件是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// ITest.aidl</span><br><span class="line">package com.example.exampleproject;</span><br><span class="line"></span><br><span class="line">import java.util.List;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">import com.example.exampleproject.entity.Music;</span><br><span class="line"></span><br><span class="line">interface ITest&#123;</span><br><span class="line">    </span><br><span class="line">    void setMusic(in Music music);</span><br><span class="line">    void setMap(in Map map);</span><br><span class="line">    void setList(in List&lt;Music&gt; musicList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-使用AIDL开启多进程模式"><a href="#5-使用AIDL开启多进程模式" class="headerlink" title="5. 使用AIDL开启多进程模式"></a>5. 使用AIDL开启多进程模式</h2><p>好了，我们已经明白了AIDL的正确书写方法，接下来使用AIDL来实现进程间的通信。这里以双向通信为例子：Activity传一个int型的值给Service，Service处理后返回给Activity。<br>这里的Activity，我们取名为MainActivity，Service我们取名为MyService。<br>ok，既然是处理后返回，所以MainActivity中需要有一个回调接口来给MyService回调，但是AIDL不支持普通接口，但支持AIDL接口，因此，我们就用AIDL来声明MainActivity中的回调接口：<br><figure class="highlight plain"><figcaption><span>ICallback.aidl</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">package com.zspirytus.simpleaidltest;</span><br><span class="line"></span><br><span class="line">interface ICallback &#123;</span><br><span class="line">    void callback(int a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Activity和Service之间的通信是通过Binder来实现的，而AIDL接口的内部类<code>Stub</code>的实现也是一个Binder，因为它继承了<code>android.os.Binder</code>接口，因此我们可以在AIDL接口中规定MainActivity和MyService的通信方式。由于我们需要从MainActivity中传值给MyService，并且要给MyService设置MainActivity的回调接口。因此就有：<br><figure class="highlight plain"><figcaption><span>IAIDLTest.aidl</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">package com.zspirytus.simpleaidltest;</span><br><span class="line"></span><br><span class="line">import com.zspirytus.simpleaidltest.ICallback;</span><br><span class="line"></span><br><span class="line">interface IAIDLTest &#123;</span><br><span class="line">    void testMethod(int a);</span><br><span class="line">    void setCallback(ICallback callback);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><code>testMethod()</code>是MainActivity向MyService传值的方法<br><code>setCallback()</code>是MainActivity为MyService设置回调接口的方法。</p>
+<p>MainActivity和MyService通信的桥梁已经规定好了，接下来就是实现它。我们在MyService中定义一个内部类MyBinder来实现它：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ICallback mCallback;</span><br><span class="line"></span><br><span class="line">    ... ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBinder</span> <span class="keyword">extends</span> <span class="title">IAIDLTest</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMethod</span><span class="params">(<span class="keyword">int</span> a)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            Log.e(<span class="keyword">this</span>.getClass().getSimpleName(), <span class="string">"MyService Receive Msg: "</span> + a + <span class="string">"\t at Thread: "</span> + Thread.currentThread().getName());</span><br><span class="line">            <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>)</span><br><span class="line">                mCallback.callback(a);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(ICallback callback)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            mCallback = callback;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>简单解释一下，MainActivity通过<code>setCallback()</code>为MyService设置回调接口，当MainActivity通过<code>testMethod()</code>传值给MyService时，MyService会处理传过来的值(这里以打印日志代替)，然后检查一下回调接口是否为空。如果不为空则调用它的回调方法，进而通知MainActivity。<br><blockquote><p>如果提示找不到IAIDLTest，可以尝试Clean一下Project尝试解决，如果Gradle报错，请检查AIDL文件是否正确。</p>
+</blockquote></p>
+<p>然后补充一下MyService的生命周期，服务端就大功告成了：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> MyBinder mBinder;</span><br><span class="line">    <span class="keyword">private</span> ICallback mCallback;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mBinder == <span class="keyword">null</span>)</span><br><span class="line">            mBinder = <span class="keyword">new</span> MyBinder();</span><br><span class="line">        <span class="keyword">return</span> mBinder;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBinder</span> <span class="keyword">extends</span> <span class="title">IAIDLTest</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMethod</span><span class="params">(<span class="keyword">int</span> a)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            Log.e(<span class="keyword">this</span>.getClass().getSimpleName(), <span class="string">"MyService Receive Msg: "</span> + a + <span class="string">"\t at Thread: "</span> + Thread.currentThread().getName());</span><br><span class="line">            <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>)</span><br><span class="line">                mCallback.callback(a);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(ICallback callback)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            mCallback = callback;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>服务端已经解决了，现在来看客户端MainActivity。<br>Activity和Service之间的通信可以通过Activity绑定Service的形式来实现，多进程模式下也不例外，但有些许不同。<br>首先声明一个Binder来构建MainActivity与MyService通信的桥梁：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> IAIDLTest mBinder;</span><br></pre></td></tr></table></figure><br>然后以内部类的形式实现MyService回调MainActivity的回调接口：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ICallbackImpl</span> <span class="keyword">extends</span> <span class="title">ICallback</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">callback</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> a)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (a) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                a1();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                a2();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">a1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mRemoteMsg.setText(<span class="string">"Receive From Remote Service: a = 1"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">a2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mRemoteMsg.setText(<span class="string">"Receive From Remote Service: a = 2"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>其次创建一个<code>ServiceConnection</code>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">conn = <span class="keyword">new</span> ServiceConnection() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName componentName, IBinder iBinder)</span> </span>&#123;</span><br><span class="line">        mBinder = IAIDLTest.Stub.asInterface(iBinder);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mBinder.setCallback(mCallback);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName componentName)</span> </span>&#123;</span><br><span class="line">        mBinder = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>最后在适当生命周期绑定和解绑Service:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">    setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">    ... ...</span><br><span class="line">    bindService();</span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onDestroy();</span><br><span class="line">    ... ...</span><br><span class="line">    unbindService();</span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">bindService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Intent startServiceIntent = <span class="keyword">new</span> Intent(MainActivity.<span class="keyword">this</span>, MyService.class);</span><br><span class="line">    bindService(startServiceIntent, conn, BIND_AUTO_CREATE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">unbindService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    unbindService(conn);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后在适当的时候发送请求就可以了，比如单击按钮发送请求：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initView</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    findViewById(R.id.btn).setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">            start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        mBinder.testMethod(A);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但是，毕竟是跨进程通信，当前进程下发起远程请求的线程是会被挂起的。如果发起的请求是一个耗时操作，并且是UI线程发起的，那就会有ANR的风险。因此，安全起见，在发起跨进程请求时，推荐切换到另一个线程后再发起。所以上面的程序可以这么改进：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                mBinder.testMethod(A);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    thread.setName(<span class="string">"myThread"</span>);</span><br><span class="line">    thread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后呢，等到服务端把请求执行完毕后，客户端发起请求的线程会被唤醒，然后继续执行。所以我们不能在回调方法中执行UI更新操作，因为回调方法并不在UI线程中执行(前面在非UI线程中发起请求)。如果需要更新UI，需要切换到UI线程后再更新UI。所以需要如下改进：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ICallbackImpl</span> <span class="keyword">extends</span> <span class="title">ICallback</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">callback</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> a)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">        mRemoteMsg.post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">switch</span> (a) &#123;</span><br><span class="line">                    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                        a1();</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                        a2();</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因此，即使服务端执行耗时操作，界面也不会卡死：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMethod</span><span class="params">(<span class="keyword">int</span> a)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">    SystemClock.sleep(<span class="number">5000</span>);</span><br><span class="line">    Log.e(<span class="keyword">this</span>.getClass().getSimpleName(), <span class="string">"MyService Receive Msg: "</span> + a + <span class="string">"\t at Thread: "</span> + Thread.currentThread().getName());</span><br><span class="line">    <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>)</span><br><span class="line">    mCallback.callback(a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote><p>服务端的方法会在Binder线程池中的线程运行，因此不必担心主线程会被阻塞</p>
+</blockquote>
+<p>还有一个小问题，如果已经绑定的Service意外死亡怎么办（比如说被系统杀死了）？我们只需要在<code>ServiceConnect#onServiceDisconnected()</code>中重新连接服务即可。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName componentName)</span> </span>&#123;</span><br><span class="line">    bindService();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><blockquote><p>MyService被杀死也没关系，<code>MainActivity#bindService()</code>中在绑定MyService时，flag已经被设置为BIND_AUTO_CREATE，会重新启动MyService的。</p>
+</blockquote><br>由于代码太长，我没有全放，只放一些比较关键的，完整代码可以看<a href="https://github.com/zkw012300/SampleCodeRepo/tree/master/simpleaidltest" target="_blank" rel="noopener">这里</a></p>
+<p>好了，简单进程间通信的实现就完成了，总结一下，基本步骤：</p>
+<ol>
+<li>创建AIDL文件搭建客户端和服务端的沟通桥梁</li>
+<li>服务端实现AIDL接口</li>
+<li>客户端通过ServiceConnection#onServiceConnected()获取Binder对象</li>
+<li>在ServiceConnection#onServiceDisconnected()中重新连接，防止Service意外死亡</li>
+<li>在客户端使用Binder对象在适当的线程向服务端发送请求</li>
+<li>在客户端的适当线程中回调</li>
+</ol>
+<h2 id="6-实践-简单的音乐播放器实现"><a href="#6-实践-简单的音乐播放器实现" class="headerlink" title="6. 实践 - 简单的音乐播放器实现"></a>6. 实践 - 简单的音乐播放器实现</h2><p>明白了进程间通讯的流程，接下来我们来实现一个简单的音乐播放功能吧。<br>我们需要完成：</p>
+<ol>
+<li>Activity和Service在不同进程</li>
+<li>默认进程中的Activity控制音乐播放暂停，接收来自另一个进程的Service发送的播放进度并显示</li>
+<li>另一个进程的Service负责播放音乐，发送播放进度给Activity。</li>
+</ol>
+<p>这个音乐播放器，至少要能播放、暂停、显示播放进度。我们可以把播放暂停和显示播放进度这两个功能分离，分别管理。<br>对于播放暂停，只需要简单的定义两个方法<code>play()</code>和<code>pause()</code>即可：<br><figure class="highlight plain"><figcaption><span>IPlayControl.aidl</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// IPlayControl.aidl</span><br><span class="line">package com.zspirytus.simplemusicplayer;</span><br><span class="line"></span><br><span class="line">import com.zspirytus.simplemusicplayer.entity.Music;</span><br><span class="line"></span><br><span class="line">interface IPlayControl &#123;</span><br><span class="line">    void play(in Music music);</span><br><span class="line">    void pause();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>对于获取播放进度的问题，我们采取订阅 - 发布的模式，需要获取播放进度的对象，传一个回调接口给被观察者，即服务端。<br>以下分别是订阅取消订阅和回调接口的AIDL文件：<br><figure class="highlight plain"><figcaption><span>IPlayProgressRegister.aidl</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// IPlayProgressRegister.aidl</span><br><span class="line">package com.zspirytus.simplemusicplayer;</span><br><span class="line"></span><br><span class="line">import com.zspirytus.simplemusicplayer.IOnProgressChange;</span><br><span class="line"></span><br><span class="line">interface IPlayProgressRegister &#123;</span><br><span class="line">    void registerProgressObserver(IOnProgressChange observer);</span><br><span class="line">    void unregisterProgressObserver(IOnProgressChange observer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><figcaption><span>IOnProgressChange.aidl</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// IOnProgressChange.aidl</span><br><span class="line">package com.zspirytus.simplemusicplayer;</span><br><span class="line"></span><br><span class="line">interface IOnProgressChange &#123;</span><br><span class="line">    void onProgressChange(int seconds);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来，就要实现服务端了。但是，前面音乐播放控制功能和进度获取功能已经被我分离了，换言之，就是有两个Binder。但是一个Service只能有一个Binder和外界沟通啊？怎么解决？不如我们定义一个Binder连接池，根据适当的请求码binderCode来返回对应的Binder。这个Binder连接池能被客户端拿到，所以它应该由AIDL实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// IBinderPool.aidl</span><br><span class="line">package com.zspirytus.simplemusicplayer;</span><br><span class="line"></span><br><span class="line">interface IBinderPool &#123;</span><br><span class="line">    IBinder getBinder(int binderCode);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Binder连接池已经定义好了，接下来就是实现服务端了，同样的，我还是用内部类的方式实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PlayMusicService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    ... ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PLAY_CONTROL_BINDER = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PLAY_PROGRESS_REGISTER_BINDER = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> BinderPool mBinder;</span><br><span class="line">    <span class="keyword">private</span> PlayControl mPlayControl;</span><br><span class="line">    <span class="keyword">private</span> PlayProgressRegister mPlayProgressRegister;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> RemoteCallbackList&lt;IOnProgressChange&gt; mIOnProgressChangeList = <span class="keyword">new</span> RemoteCallbackList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    ... ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BinderPool</span> <span class="keyword">extends</span> <span class="title">IBinderPool</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> IBinder <span class="title">getBinder</span><span class="params">(<span class="keyword">int</span> binderCode)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            <span class="keyword">switch</span> (binderCode) &#123;</span><br><span class="line">                <span class="keyword">case</span> PLAY_CONTROL_BINDER:</span><br><span class="line">                    <span class="keyword">if</span> (mPlayControl == <span class="keyword">null</span>)</span><br><span class="line">                        mPlayControl = <span class="keyword">new</span> PlayControl();</span><br><span class="line">                    <span class="keyword">return</span> mPlayControl;</span><br><span class="line">                <span class="keyword">case</span> PLAY_PROGRESS_REGISTER_BINDER:</span><br><span class="line">                    <span class="keyword">if</span> (mPlayProgressRegister == <span class="keyword">null</span>)</span><br><span class="line">                        mPlayProgressRegister = <span class="keyword">new</span> PlayProgressRegister();</span><br><span class="line">                    <span class="keyword">return</span> mPlayProgressRegister;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">PlayControl</span> <span class="keyword">extends</span> <span class="title">IPlayControl</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">play</span><span class="params">(Music music)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            MyMediaPlayer.getInstance().play(music);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pause</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            MyMediaPlayer.getInstance().pause();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">PlayProgressRegister</span> <span class="keyword">extends</span> <span class="title">IPlayProgressRegister</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerProgressObserver</span><span class="params">(IOnProgressChange observer)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            mIOnProgressChangeList.register(observer);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unregisterProgressObserver</span><span class="params">(IOnProgressChange observer)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            mIOnProgressChangeList.unregister(observer);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>在IBinderPool.Stub的实现BinderPool中，会根据传递过来的binderCode来返回对应的已被实例化的Binder。<br><code>MyMediaPlayer</code>是我对MediaPlayer的一个很简单的封装，拿来当例子够了。<br>接下来补上Service的生命周期就ok了，代码比较长，我就不贴了。</p>
+<p>接下来看客户端的实现：<br>首先定义从Service端获得的Binder对象，然后在ServiceConnection中获取Binder和重连Service。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> IBinderPool mBinder;</span><br><span class="line"><span class="keyword">private</span> ServiceConnection conn;</span><br><span class="line"></span><br><span class="line">conn = <span class="keyword">new</span> ServiceConnection() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName componentName, IBinder iBinder)</span> </span>&#123;</span><br><span class="line">        mBinder = IBinderPool.Stub.asInterface(iBinder);</span><br><span class="line">        register();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName componentName)</span> </span>&#123;</span><br><span class="line">        bindService();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>接着，实现回调接口并传给Service，以供其传递播放进度给Activity（上一个步骤的<code>register()</code>方法已经把回调接口传给了Service）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">IOnProgressChangeImpl</span> <span class="keyword">extends</span> <span class="title">IOnProgressChange</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onProgressChange</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> currentMilliseconds)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">        mProgressText.post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                mProgressText.setText(DateUtil.getMinutesSeconds(currentMilliseconds));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后就是请求部分，在客户端中，我们获得是Binder连接池的对象，我们可以传binderCode来获得对应的Binder:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PLAY_CONTROL_BINDER = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PLAY_PROGRESS_REGISTER_BINDER = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">play</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Music sampleMusic = MusicFactory.getSampleMusic();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (mPlayControl == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    IBinder iBinder = mBinder.getBinder(PLAY_CONTROL_BINDER);</span><br><span class="line">                    mPlayControl = IPlayControl.Stub.asInterface(iBinder);</span><br><span class="line">                &#125;</span><br><span class="line">                mPlayControl.play(sampleMusic);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">pause</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (mPlayControl == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    IBinder iBinder = mBinder.getBinder(PLAY_CONTROL_BINDER);</span><br><span class="line">                    mPlayControl = IPlayControl.Stub.asInterface(iBinder);</span><br><span class="line">                &#125;</span><br><span class="line">                mPlayControl.pause();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后在AndroidManifest.xml中为Service指定进程，就大功告成了。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">service</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"com.zspirytus.simplemusicplayer.PlayMusicService"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:enabled</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:process</span>=<span class="string">":playMusicService"</span>&gt;</span><span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>由于代码太长，我没有全放，只放一些比较关键的，完整代码可以看<a href="https://github.com/zkw012300/SampleCodeRepo/tree/master/simplemusicplayer" target="_blank" rel="noopener">这里</a>。</p>
+<h2 id="7-总结"><a href="#7-总结" class="headerlink" title="7. 总结"></a>7. 总结</h2><p>我目前的理解是，在Android跨进程通讯中，一般是序列化+接口+线程切换。只要注意这三点一般没大问题。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/多进程/" rel="tag"># 多进程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/DFS/" rel="next" title="关于深度优先搜索的一点小心得">
+                <i class="fa fa-chevron-left"></i> 关于深度优先搜索的一点小心得
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/theSummaryOf2018/" rel="prev" title="2018年度总结">
+                2018年度总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/myAvatar.jpeg"
+                alt="ZSpirytus" />
+            
+              <p class="site-author-name" itemprop="name">ZSpirytus</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zkw012300" title="GitHub &rarr; https://github.com/zkw012300" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:zhangwel261717@gmail.com" title="E-Mail &rarr; mailto:zhangwel261717@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.zhihu.com/people/zspi/activities" title="知乎 &rarr; https://www.zhihu.com/people/zspi/activities" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Android中的多进程"><span class="nav-number">2.</span> <span class="nav-text">2. Android中的多进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-准备知识：序列化"><span class="nav-number">3.</span> <span class="nav-text">3. 准备知识：序列化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-关于AIDL"><span class="nav-number">4.</span> <span class="nav-text">4. 关于AIDL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-使用AIDL开启多进程模式"><span class="nav-number">5.</span> <span class="nav-text">5. 使用AIDL开启多进程模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-实践-简单的音乐播放器实现"><span class="nav-number">6.</span> <span class="nav-text">6. 实践 - 简单的音乐播放器实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-总结"><span class="nav-number">7.</span> <span class="nav-text">7. 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZSpirytus</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v6.5.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '5fc5765877e740017870',
+          clientSecret: '7296b141cf164956d5fe98291c06b5945f9da3a8',
+          repo: 'zkw012300.github.io',
+          owner: 'zkw012300',
+          admin: ['zkw012300'],
+          id: location.pathname,
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "JWTab0YdgMPzUX5Pz04JS9xg-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "JWTab0YdgMPzUX5Pz04JS9xg-gzGzoHsz",
+                'X-LC-Key': "siGukweQq85Q8HGzlRIcl1Vb",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

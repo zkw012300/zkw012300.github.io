@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前言FloatingActionButton是Google力推的一个Material Design控件。最近做的一个项目，需要实现一个可以左右滑动，松手回到原位的FloatingActionButton。研究了大半天就写出来了，于是写写这片博客记录一下。">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可拖拽的FloatingActionButton">
+<meta property="og:url" content="www.zspirytus.com/DraggableFloatingActionButton/index.html">
+<meta property="og:site_name" content="ZSpirytus的博客">
+<meta property="og:description" content="前言FloatingActionButton是Google力推的一个Material Design控件。最近做的一个项目，需要实现一个可以左右滑动，松手回到原位的FloatingActionButton。研究了大半天就写出来了，于是写写这片博客记录一下。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="/DraggableFloatingActionButton/draggablefloatingactionbutton_cover.jpg">
+<meta property="og:updated_time" content="2018-10-02T18:17:39.428Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="可拖拽的FloatingActionButton">
+<meta name="twitter:description" content="前言FloatingActionButton是Google力推的一个Material Design控件。最近做的一个项目，需要实现一个可以左右滑动，松手回到原位的FloatingActionButton。研究了大半天就写出来了，于是写写这片博客记录一下。">
+<meta name="twitter:image" content="/DraggableFloatingActionButton/draggablefloatingactionbutton_cover.jpg">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ZSpirytus的博客" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="www.zspirytus.com/DraggableFloatingActionButton/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>可拖拽的FloatingActionButton | ZSpirytus的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZSpirytus的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里是ZSpirytus的个人博客</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="www.zspirytus.com/DraggableFloatingActionButton/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ZSpirytus">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/myAvatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZSpirytus的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">可拖拽的FloatingActionButton
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-22 18:52:48" itemprop="dateCreated datePublished" datetime="2018-08-22T18:52:48+08:00">2018-08-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-03 02:17:39" itemprop="dateModified" datetime="2018-10-03T02:17:39+08:00">2018-10-03</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/DraggableFloatingActionButton/" class="leancloud_visitors" data-flag-title="可拖拽的FloatingActionButton">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/DraggableFloatingActionButton/draggablefloatingactionbutton_cover.jpg" title="cover">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>FloatingActionButton是Google力推的一个Material Design控件。最近做的一个项目，需要实现一个可以左右滑动，松手回到原位的FloatingActionButton。研究了大半天就写出来了，于是写写这片博客记录一下。</p>
+<a id="more"></a>
+<h2 id="MotionEvent的事件"><a href="#MotionEvent的事件" class="headerlink" title="MotionEvent的事件"></a>MotionEvent的事件</h2><p>当我们点击一个view，或者拖动一个view到处滑动时，都会产生一个MotionEvent事件。</p>
+<ul>
+<li>当我们的手指刚刚点击到屏幕时，会产生MotionEvent.ACTION_DOWN事件；</li>
+<li>当我们的手指在屏幕上到处滑动时，会产生MotionEvent.ACTION_MOVE事件；</li>
+<li>当我们的手指离开屏幕时，会产生MotionEvent.ACTION_UP事件。</li>
+</ul>
+<p>那么这就好办了，当产生了MotionEvent.ACTION_MOVE事件时，只需要获得屏幕触点的坐标，把fab移动过去就行了</p>
+<h2 id="设置OnTouchListener"><a href="#设置OnTouchListener" class="headerlink" title="设置OnTouchListener"></a>设置OnTouchListener</h2><p>前面已经说明了，view会产生MotionEvent.ACTION_DOWN，MotionEvent.ACTION_MOVE 和 MotionEvent.ACTION_UP事件。问题是如何捕获这些事件。当我们的手指开始接触屏幕，直到离开屏幕前，View.onTouch()方法都会被调用，而且这个方法的参数中有MotionEvent参数，可以获取事件。因此我们需要实现该方法，并为fab设置OnTouchListener监听器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mFab.setOnTouchListener(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouch</span><span class="params">(View view, MotionEvent motionEvent)</span> </span>&#123;</span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来就可以通过motionEvent来获得事件，并根据事件来响应。实现的思路已经很明显了，接下来分事件来说明。</p>
+<h3 id="MotionEvent-ACTION-DOWN"><a href="#MotionEvent-ACTION-DOWN" class="headerlink" title="MotionEvent.ACTION_DOWN"></a>MotionEvent.ACTION_DOWN</h3><p>当手指开始接触屏幕时，会产生MotionEvent.ACTION_DOWN事件。<br>这时要做一件事，记录下『mFab初始坐标X值和触点坐标X值之差』，以供备用。<br>其中initRawX为mFab的初始坐标的X值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">    dX = initRawX - motionEvent.getRawX();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="MotionEvent-ACTION-MOVE"><a href="#MotionEvent-ACTION-MOVE" class="headerlink" title="MotionEvent.ACTION_MOVE"></a>MotionEvent.ACTION_MOVE</h3><p>当手指开始在屏幕上滑动时，会产生MotionEvent.ACTION_MOVE事件。<br>这时需要实现mFab跟随手指移动的功能。<br>要实现mFab移动的功能，我们必须计算出手指移动的距离deltaX，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deltaX = (motionEvent.getRawX() - initRawX + dX) * damping;</span><br></pre></td></tr></table></figure>
+<p>其中damping是阻尼，0 &lt; damping &lt;= 1.</p>
+<p>计算出手指移动的距离deltaX后：</p>
+<ul>
+<li>当移动的距离deltaX满足 -CLICK_DRAG_TOLERANCE &lt; deltaX &lt; CLICK_DRAG_TOLERANCE时，mFab不用移动，因为我们单击mFab时，是不需要mFab移动的。</li>
+<li>当移动的距离deltaX满足 deltaX &gt; border 或 deltaX &lt; -border 时，mFab则停留在border或-border的位置就可以了。</li>
+</ul>
+<p>所以便有：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (deltaX &lt; -border) &#123;</span><br><span class="line">    deltaX = -border;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX &lt; -CLICK_DRAG_TOLERANCE) &#123;</span><br><span class="line">    setImageResource(R.drawable.ic_skip_previous_white_48dp);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX &gt; CLICK_DRAG_TOLERANCE &amp;&amp; deltaX &lt;= border) &#123;</span><br><span class="line">    setImageResource(R.drawable.ic_skip_next_white_48dp);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX &gt; border) &#123;</span><br><span class="line">    deltaX = border;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (Math.abs(deltaX) &gt;= CLICK_DRAG_TOLERANCE) &#123;</span><br><span class="line">    <span class="comment">// 此时deltaX已经大于mFab移动的阈值CLICK_DRAG_TOLERANCE，mFab移动deltaX个单位。</span></span><br><span class="line">    view.animate()</span><br><span class="line">        .x(initRawX + deltaX)</span><br><span class="line">        .setDuration(RESPONSE_ACTION_MOVE_DELAY)</span><br><span class="line">        <span class="comment">// RESPONSE_ACTION_MOVE_DELAY == 0，立即移动</span></span><br><span class="line">        .start();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">true</span>;</span><br></pre></td></tr></table></figure><br>其中CLICK_DRAG_TOLERANCE是mFab能移动距离的阈值。</p>
+<h3 id="MotionEvent-ACTION-UP"><a href="#MotionEvent-ACTION-UP" class="headerlink" title="MotionEvent.ACTION_UP"></a>MotionEvent.ACTION_UP</h3><p>当手指离开屏幕时，会产生MotionEvent.ACTION_UP事件。<br>这个时候就可以处理单击、左滑和右滑的事件。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (onDraggableFABEventListener != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (Math.abs(deltaX) &lt; CLICK_DRAG_TOLERANCE) &#123;</span><br><span class="line">        onDraggableFABEventListener.onClick();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (deltaX == border) &#123;</span><br><span class="line">            onDraggableFABEventListener.onDraggedRight();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX == -border) &#123;</span><br><span class="line">            onDraggableFABEventListener.onDraggedLeft();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果deltaX的绝对值小于CLICK_DRAG_TOLERANCE，则表明是单击事件；<br>否则如果deltaX == border，则表明是右滑事件；<br>否则如果deltaX == -border，则表明是左滑事件。</p>
+<p>处理完事件后，mFab要回到原位，因此：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">view.animate()</span><br><span class="line">        .x(initRawX)</span><br><span class="line">        .setDuration(RESET_ANIMATOR_DURATION)</span><br><span class="line">        <span class="comment">// RESET_ANIMATOR_DURATION &gt; 0</span></span><br><span class="line">        .start();</span><br><span class="line"><span class="keyword">return</span> <span class="keyword">true</span>;</span><br></pre></td></tr></table></figure></p>
+<p>至此，整个onTouch方法就完成了！以下是完整代码:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouch</span><span class="params">(View view, MotionEvent motionEvent)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> action = motionEvent.getAction();</span><br><span class="line">    <span class="keyword">switch</span> (action) &#123;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">            dX = initRawX - motionEvent.getRawX();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">            deltaX = (motionEvent.getRawX() - initRawX + dX) * damping;</span><br><span class="line">            <span class="keyword">if</span> (deltaX &lt; -border) &#123;</span><br><span class="line">                deltaX = -border;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX &lt; -CLICK_DRAG_TOLERANCE) &#123;</span><br><span class="line">                setImageResource(R.drawable.ic_skip_previous_white_48dp);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX &gt; CLICK_DRAG_TOLERANCE &amp;&amp; deltaX &lt;= border) &#123;</span><br><span class="line">                setImageResource(R.drawable.ic_skip_next_white_48dp);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX &gt; border) &#123;</span><br><span class="line">                deltaX = border;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (Math.abs(deltaX) &gt;= CLICK_DRAG_TOLERANCE) &#123;</span><br><span class="line">                view.animate()</span><br><span class="line">                        .x(initRawX + deltaX)</span><br><span class="line">                        .setDuration(RESPONSE_ACTION_MOVE_DELAY)</span><br><span class="line">                        .start();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">            <span class="keyword">int</span> resId = MediaPlayController.getInstance().isPlaying() ? R.drawable.ic_pause_white_48dp : R.drawable.ic_play_arrow_white_48dp;</span><br><span class="line">            setImageResource(resId);</span><br><span class="line">            <span class="keyword">if</span> (onDraggableFABEventListener != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (Math.abs(deltaX) &lt; CLICK_DRAG_TOLERANCE) &#123;</span><br><span class="line">                    onDraggableFABEventListener.onClick();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (deltaX == border) &#123;</span><br><span class="line">                        onDraggableFABEventListener.onDraggedRight();</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (deltaX == -border) &#123;</span><br><span class="line">                        onDraggableFABEventListener.onDraggedLeft();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            view.animate()</span><br><span class="line">                    .x(initRawX)</span><br><span class="line">                    .setDuration(RESET_ANIMATOR_DURATION)</span><br><span class="line">                    .start();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(motionEvent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="mFab的初始位置"><a href="#mFab的初始位置" class="headerlink" title="mFab的初始位置"></a>mFab的初始位置</h2><p>前面的onTouch方法需要initRawX的值，我们如何获得这个值？<br><code>this.getX()</code>是不可行的，因为当执行<code>this.getX()</code>的时候，不能保证mFab已经被绘制出来了；而如果mFab没有绘制出来，<code>this.getX()</code>将会返回0。因此我们需要在适当的实际调用<code>this.getX()</code>来获取initRawX。<br>onWindowFocusChanged()方法是在Activity的onResume()后被调用，当Activity的onResume()方法被调用后，Activity是可见，可与用户交互的，说明view都已经绘制完毕，所以我们可以在onWindowFocusChanged()方法中获取mFab的初始坐标。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onWindowFocusChanged</span><span class="params">(<span class="keyword">boolean</span> hasWindowFocus)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onWindowFocusChanged(hasWindowFocus);</span><br><span class="line">    <span class="comment">// get mFab initial location X</span></span><br><span class="line">    initRawX = getX();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实可拖拽的FloatingActionButton的实现原理很简单，只需要为mFab设置OnTouchListener，在监听器中捕获MotionEvent.ACTION_DOWN、MotionEvent.ACTION_MOVE、MotionEvent.ACTION_UP 事件，再分别处理事件即可。完整代码可以看<a href="https://github.com/zkw012300/DraggableFloatingActionButton/blob/master/mylibrary/src/main/java/com/zspirytus/mylibrary/DraggableFloatingActionButton.java" target="_blank" rel="noopener">这里</a>。</p>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>之前看Android中的View事件的分发机制，第一次接触到了ACTION_DOWN、ACTION_MOVE、ACTION_UP事件，看了一遍云里雾里的，但是多看几遍后就开始理解。这次的可拖拽的FloatingActionButton是我在写的项目中的一个小控件，有了之前的基础，写起来不太吃力。所以我认为这三个事件还是蛮重要的。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Observer/" rel="next" title="设计模式——观察者模式">
+                <i class="fa fa-chevron-left"></i> 设计模式——观察者模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/DFS/" rel="prev" title="关于深度优先搜索的一点小心得">
+                关于深度优先搜索的一点小心得 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/myAvatar.jpeg"
+                alt="ZSpirytus" />
+            
+              <p class="site-author-name" itemprop="name">ZSpirytus</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zkw012300" title="GitHub &rarr; https://github.com/zkw012300" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:zhangwel261717@gmail.com" title="E-Mail &rarr; mailto:zhangwel261717@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.zhihu.com/people/zspi/activities" title="知乎 &rarr; https://www.zhihu.com/people/zspi/activities" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MotionEvent的事件"><span class="nav-number">2.</span> <span class="nav-text">MotionEvent的事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置OnTouchListener"><span class="nav-number">3.</span> <span class="nav-text">设置OnTouchListener</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MotionEvent-ACTION-DOWN"><span class="nav-number">3.1.</span> <span class="nav-text">MotionEvent.ACTION_DOWN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MotionEvent-ACTION-MOVE"><span class="nav-number">3.2.</span> <span class="nav-text">MotionEvent.ACTION_MOVE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MotionEvent-ACTION-UP"><span class="nav-number">3.3.</span> <span class="nav-text">MotionEvent.ACTION_UP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mFab的初始位置"><span class="nav-number">4.</span> <span class="nav-text">mFab的初始位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感想"><span class="nav-number">6.</span> <span class="nav-text">感想</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZSpirytus</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v6.5.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '5fc5765877e740017870',
+          clientSecret: '7296b141cf164956d5fe98291c06b5945f9da3a8',
+          repo: 'zkw012300.github.io',
+          owner: 'zkw012300',
+          admin: ['zkw012300'],
+          id: location.pathname,
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "JWTab0YdgMPzUX5Pz04JS9xg-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "JWTab0YdgMPzUX5Pz04JS9xg-gzGzoHsz",
+                'X-LC-Key': "siGukweQq85Q8HGzlRIcl1Vb",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1. 前言上周刷了20来道LeetCode的题，总结出了一些关于深度优先搜索的小小的心得，于是有了这篇博客。这次的总体思路是：  深度优先搜索算法的工作过程 如何使用深度优先搜索算法来进行遍历 两个有趣的问题 深度优先搜索算法和循环的关系  那我们开始吧。">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于深度优先搜索的一点小心得">
+<meta property="og:url" content="www.zspirytus.com/DFS/index.html">
+<meta property="og:site_name" content="ZSpirytus的博客">
+<meta property="og:description" content="1. 前言上周刷了20来道LeetCode的题，总结出了一些关于深度优先搜索的小小的心得，于是有了这篇博客。这次的总体思路是：  深度优先搜索算法的工作过程 如何使用深度优先搜索算法来进行遍历 两个有趣的问题 深度优先搜索算法和循环的关系  那我们开始吧。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="/DFS/cover.jpeg">
+<meta property="og:image" content="/DFS/SimpleExample.jpg">
+<meta property="og:image" content="/DFS/AdjacencyMatrix.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step1.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step2.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step3.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step4.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step5.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step6.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step7.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step8.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step9.jpg">
+<meta property="og:image" content="/DFS/SimpleExample_Step10.jpg">
+<meta property="og:image" content="/DFS/APartOfTree.jpg">
+<meta property="og:image" content="/DFS/Maze.jpg">
+<meta property="og:image" content="/DFS/FourStep.jpg">
+<meta property="og:image" content="/DFS/Matrix.jpg">
+<meta property="og:image" content="/DFS/no_repeating_str_i_next_status.jpg">
+<meta property="og:updated_time" content="2018-11-08T16:22:45.010Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于深度优先搜索的一点小心得">
+<meta name="twitter:description" content="1. 前言上周刷了20来道LeetCode的题，总结出了一些关于深度优先搜索的小小的心得，于是有了这篇博客。这次的总体思路是：  深度优先搜索算法的工作过程 如何使用深度优先搜索算法来进行遍历 两个有趣的问题 深度优先搜索算法和循环的关系  那我们开始吧。">
+<meta name="twitter:image" content="/DFS/cover.jpeg">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ZSpirytus的博客" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="www.zspirytus.com/DFS/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>关于深度优先搜索的一点小心得 | ZSpirytus的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZSpirytus的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">这里是ZSpirytus的个人博客</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="www.zspirytus.com/DFS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ZSpirytus">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/myAvatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZSpirytus的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于深度优先搜索的一点小心得
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-18 10:32:07" itemprop="dateCreated datePublished" datetime="2018-10-18T10:32:07+08:00">2018-10-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-09 00:22:45" itemprop="dateModified" datetime="2018-11-09T00:22:45+08:00">2018-11-09</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/DFS/" class="leancloud_visitors" data-flag-title="关于深度优先搜索的一点小心得">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="/DFS/cover.jpeg">
+<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>上周刷了20来道LeetCode的题，总结出了一些关于深度优先搜索的小小的心得，于是有了这篇博客。这次的总体思路是：</p>
+<ol>
+<li>深度优先搜索算法的工作过程</li>
+<li>如何使用深度优先搜索算法来进行遍历</li>
+<li>两个有趣的问题</li>
+<li>深度优先搜索算法和循环的关系</li>
+</ol>
+<p>那我们开始吧。</p>
+<a id="more"></a>
+<h2 id="2-深度优先搜索"><a href="#2-深度优先搜索" class="headerlink" title="2. 深度优先搜索"></a>2. 深度优先搜索</h2><p>深度优先搜索（Deep First Search, DFS）是一种先序遍历，先遇到的节点先访问，然后以这个节点为起点，继续向下遍历，直至所有的节点都被访问（连通分量 == 1的情况下）。所以，个人认为，DFS可以看做是一种暴力枚举的算法。多说无益，下面一个例子可能会让你对DFS有初步的了解。<br><img src="/DFS/SimpleExample.jpg" title="简单的例子"><br>这是一个有向、无环、连通分量为1的图，我们可以用邻接矩阵来存储它：<br><img src="/DFS/AdjacencyMatrix.jpg" title="邻接矩阵"><br>这个矩阵的意义是，如果<code>graph[i][j] == 1</code>，那么节点i和节点j的关系是<code>i -&gt; j</code>，即有从节点i到节点j的通路。<br>我先不放代码，我先跟着DFS的思路来对上面的图，以节点1为起点深度优先遍历一次。<br>由于是从节点1开始遍历，因此我们先看看数组graph[0][0…5]，从0到5扫一遍，发现graph[0][1]不为零，说明有节点1到节点2的边。由于DFS是先访问，再以此节点为起点继续向下遍历，所以我们先把节点1，节点2存起来，然后以节点2为起点，向下遍历，如下图：<br><img src="/DFS/SimpleExample_Step1.jpg" title="DFS第一步"><br>接下来，扫一遍<code>graph[1][0...5]</code>，发现<code>graph[1][2]</code>不为0，说明节点2连向节点3，则把节点3存起来，然后以节点3为起点，向下遍历：<br><img src="/DFS/SimpleExample_Step2.jpg" title="DFS第二步"><br>很好，接下来扫一遍<code>graph[2][0...5]</code>，但是遗憾的是，数组<code>graph[2][0...5]</code>并没有值为1的元素，这表明，节点3没有连向其他节点，即出度为0。因此，这时候需要回溯，回到上一层：<br><img src="/DFS/SimpleExample_Step3.jpg" title="DFS第三步"><br>这时，上一步已经回溯到了上一层，此时我们需要扫描<code>graph[1][3...5]</code>，此时发现<code>graph[1][3]</code>不为0，说明节点2连向节点4，那么应该把节点4存起来，接下来以节点4为起点继续向下遍历：<br><img src="/DFS/SimpleExample_Step4.jpg" title="DFS第四步"><br>很好，接下来扫一遍<code>graph[3][0...5]</code>，发现<code>graph[3][4]</code>不为0，说明节点4连向节点5，我们应该把节点5存起来，然后以节点5为起点，向下遍历：<br><img src="/DFS/SimpleExample_Step5.jpg" title="DFS第五步"><br>此时，我们需要扫描一遍<code>graph[4][0...5]</code>，发现<code>graph[4][5]</code>不为0，说明节点5连向节点6，我们应该把节点6存起来。然后以节点6位节点，向下遍历：<br><img src="/DFS/SimpleExample_Step6.jpg" title="DFS第六步"><br>然而，<code>graph[5][0...5]</code>并没有不为0的元素，这说明，节点6的出度为0，应该回溯，回到上一层：<br><img src="/DFS/SimpleExample_Step7.jpg" title="DFS第七步"><br>此时，我们回到了<code>graph[4][0...5]</code>，但是<code>graph[4][0...5]</code>已经扫完了，我们继续回溯，回到<code>graph[4][0...5]</code>的上一层<code>graph[3][5...5]</code>，但是<code>graph[3][5...5]</code>已经没有不为0的元素了，所以我们继续回溯，回到上一层：<br><img src="/DFS/SimpleExample_Step8.jpg" title="DFS第八步"><br>此时，我们回到了<code>graph[1][4...5]</code>，<code>graph[1][4...5]</code>已经没有不为0的元素了，继续回溯，回到上一层：<br><img src="/DFS/SimpleExample_Step9.jpg" title="DFS第九步"><br>终于回到<code>graph[0][2...5]</code>了，我们继续扫描，发现<code>graph[0][4]</code>不为0，但是节点5（<code>graph[0][4]</code>的4表示节点5）已经访问过了，我们没必要，也不能继续存节点5了，所以我们忽略<code>graph[0][4]</code>，继续扫描，最后扫描完毕，遍历结束。<br><img src="/DFS/SimpleExample_Step10.jpg" title="DFS第十步"></p>
+<p>这个过程如果明白了，代码就很容易写出来：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">deepFirstSearch</span><span class="params">(<span class="keyword">int</span>[][] graph, List&lt;Integer&gt; result, <span class="keyword">int</span>[] accessFlag, <span class="keyword">int</span> startVertex)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (startVertex &lt; graph.length) &#123;</span><br><span class="line">        result.add(startVertex + <span class="number">1</span>);</span><br><span class="line">        accessFlag[startVertex] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; graph[startVertex].length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (graph[startVertex][i] == <span class="number">1</span> &amp;&amp; accessFlag[i] != <span class="number">1</span>) &#123;</span><br><span class="line">                deepFirstSearch(graph, result, accessFlag, i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>解释一下，for循环对应上面所说的扫描，<code>startVertex</code>是当前的起点。如果<code>graph[startVertex][i]</code>不为0，说明有从startVertex到i的通路，即<code>startVertex -&gt; i</code>，并且如果节点i并未被访问（访问节点i时accessFlag[i]会被置为1），那就以节点i为起点向下遍历；而if语句是为了检查输入数据是否合法。<br>方法已经写好，我们只需要如下调用，就能拿到DFS的结果：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">deepFirstSearch(graph, result, <span class="keyword">new</span> <span class="keyword">int</span>[graph.length], <span class="number">0</span>);</span><br></pre></td></tr></table></figure></p>
+<p>总结一下，DFS就是先遇到先访问，再以此为起点继续访问，直至全部访问完毕，很像先序遍历。</p>
+<h2 id="3-DFS应该怎么用来遍历？"><a href="#3-DFS应该怎么用来遍历？" class="headerlink" title="3. DFS应该怎么用来遍历？"></a>3. DFS应该怎么用来遍历？</h2><p>通过上面的说明，想必已经对DFS有初步的理解了吧。那我们继续吧。<br>前面我已经说过，DFS可以看做是一种暴力枚举算法。结合上面的例子，我们可以看到，邻接矩阵graph的所有元素都被DFS算法扫描了一遍，所以至少从这个例子来看DFS是一种暴力枚举算法。我认为确实也是。<br>OK，既然我们已经知道DFS可以看做一种暴力枚举算法，我们应该怎么用它来枚举？在这里，我想通过分析二叉树的先序遍历过程乃至多叉树的遍历过程，进而推广到一般的情况来说明。</p>
+<p>首先定义一下树的数据结构：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Tree</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    Tree leftChild;</span><br><span class="line">    Tree rightChild;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>自然地，该二叉树的先序遍历就可以这么写：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">preOrderTraversal</span><span class="params">(Tree parent)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(tree != <span class="keyword">null</span>) &#123;</span><br><span class="line">        accessTreeVertex(parent);</span><br><span class="line">        preOrderTraversal(parent.leftChild);</span><br><span class="line">        preOrderTraversal(parent.rightChild);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>二叉树的遍历如何推广到多叉树的遍历？如果可以用for循环将这个节点的所有孩子节点列举出来那就好了。确实可以。我们只需要稍微改写一下数据结构：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Tree</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    Tree children[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>然后如下遍历：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">preOrderTraversal</span><span class="params">(Tree parent)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(tree != <span class="keyword">null</span>) &#123;</span><br><span class="line">        accessTreeVertex(parent);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; parent.children.length; i++) &#123;</span><br><span class="line">            preOrderTraversal(tree.children[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>为什么要这么写，这段代码背后的思路是什么？<br>如果<code>children.length == 2</code>那就是二叉树的情形。自然地，如果<code>children.length</code>为任意值，那就是任意多叉树的情形，即可以对任意多叉树进行遍历。其实思路就是将孩子节点转化成可以被for循环列举的形式（如上面是把孩子节点转成数组）。<br>现在，我们看看多叉树的子结构：<br><img src="/DFS/APartOfTree.jpg" title="多叉树子结构"><br>这个多叉树的子结构，是一个父节点带着n个子节点(n是任意一个大于0的整数)的结构。我们如何对这个子结构进行遍历？</p>
+<ol>
+<li>首先我们访问父节点，即<code>accessVertex(parent)</code></li>
+<li>因为父节点有n个子节点，所以我们挨个的访问它们。由于孩子节点存在数组中，于是我们可以用for循环解决。</li>
+</ol>
+<p>因此遍历一个子结构就可以这么写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// traversal the substructure of tree</span><br><span class="line">// Input: SubStructure of tree</span><br><span class="line"></span><br><span class="line">function traversalSubStructure(Tree subTreeRoot):</span><br><span class="line">    access(subTreeRoot)</span><br><span class="line">    for i in 0 to subTreeRoot.children.length</span><br><span class="line">        traversalSubStructure(subTreeRoot.children[i])</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>由于多叉树所有的子结构共同组成整个多叉树（即可以被递归定义），所以我们可以用递归来完成遍历。<br>如何使用递归？只需要确认好边界条件即可。初始条件当然是放入一个树的根，停止向下递归则是遇到了叶子节点，即这个节点的children域为空。所以：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Traversal tree</span><br><span class="line">// Input: root of tree</span><br><span class="line"></span><br><span class="line">function traversalTree(Tree treeRoot):</span><br><span class="line">    if treeRoot not null then</span><br><span class="line">        access(treeRoot)</span><br><span class="line">        for i in 0 to treeRoot.children.length</span><br><span class="line">            traversalSubStructure(treeRoot.children[i])</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>说了那么多，我想表达的是：如果一个节点，它的子节点可以用循环来列举的话，那我们可以用循环+递归的形式来进行遍历这个图。<br>更近一步来说，我们可以用递归+一个for循环来实现n重循环，进而进行遍历。n重循环天生就适合拿来作为枚举的工具。所以，我们可以把问题写成n重循环的形式，然后再转化成递归，就可以用DFS来解决遍历问题。<br>因此，DFS可以写成如下形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void DFS(Graph graph) &#123;</span><br><span class="line">    if(边界条件) &#123;</span><br><span class="line">        for(i;循环条件;i++) &#123;</span><br><span class="line">        	DFS(graph.child.get(i));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-两个问题"><a href="#4-两个问题" class="headerlink" title="4. 两个问题"></a>4. 两个问题</h2><p>在刷题的过程中，我遇到了两个很有意思的问题，都可以用DFS来解决，这里分享一下，分别是迷宫问题和不重复字符的字符串。</p>
+<h3 id="4-1-迷宫问题"><a href="#4-1-迷宫问题" class="headerlink" title="4.1. 迷宫问题"></a>4.1. 迷宫问题</h3><p>长话短说，迷宫问题是这么被描述的（LeetCode上的描述很长，我就不贴了）：<br>给定一个二维数组来表示一个迷宫。这个数组里的元素要么为0要么为1；0代表可以通过，1代表是墙壁，不可通过。<br>比如说，给定一个二维数组：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[][] maze = &#123;</span><br><span class="line">    &#123;<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>&#125;,</span><br><span class="line">    &#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>&#125;,</span><br><span class="line">    &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>&#125;,</span><br><span class="line">    &#123;<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><br>它表示这个迷宫，灰色为墙壁，白色为通路：<br><img src="/DFS/Maze.jpg" title="迷宫"><br>现在，给定一个起点和终点，找出一条可行的路径来走出这个迷宫。</p>
+<p>不妨以上图为例子，起点为(1, 1)，终点为(6, 5)。</p>
+<p>如何用DFS的实现来解决迷宫问题？我们走到一个点时（必然的，这个点的值为0，即为通路），我们可以选择向上、向下、向左或者是向右走；而前面的问题，都是一个父节点带着n个子节点的情形，我们可以照葫芦画瓢，父节点就是当前节点，而子节点就是上、下、左以及右的节点，画成图的话是这样的：<br><img src="/DFS/FourStep.jpg" title="子结构"></p>
+<p>先对这个子结构进行遍历，伪代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Traversal currentPoint and its North, South, West and East Point</span><br><span class="line">// Input: maze, currentPoint</span><br><span class="line"></span><br><span class="line">function traversalCurrentPoint(Maze maze, Point currentPoint):</span><br><span class="line">    for point in &#123;currentPoint.North, currentPoint.South, currentPoint.West, currentPoint.East&#125; :</span><br><span class="line">        traversalCurrentPoint(point)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>接下来确定好边界条件，初始条件当然是给一个起点，停止向下递归的条件是：</p>
+<ol>
+<li>遇上墙壁</li>
+<li>遇上终点</li>
+</ol>
+<p>所以，对每个子结构遍历的伪代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// Solve Maze Problem</span><br><span class="line">// Input: maze, start, end</span><br><span class="line"></span><br><span class="line">function solveMaze(Maze maze, Point start, Point end, Result result):</span><br><span class="line">    if start == end then </span><br><span class="line">        result.add(start)</span><br><span class="line">        return</span><br><span class="line">    else if is not wall then </span><br><span class="line">        result.add(start)</span><br><span class="line">        for Point in &#123;start.North, start.South, start.West, start.East&#125; :</span><br><span class="line">            solveMaze(maze, start, end, result)</span><br><span class="line">        result.remove(start)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>因此，相应的Java代码实现有：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Point[] getPoints(Point currentPoint) &#123;</span><br><span class="line">    <span class="keyword">int</span> currentX = currentPoint.x;</span><br><span class="line">    <span class="keyword">int</span> currentY = currentPoint.y;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Point[]&#123;</span><br><span class="line">            <span class="keyword">new</span> Point(currentX - <span class="number">1</span>, currentY), <span class="comment">// North</span></span><br><span class="line">            <span class="keyword">new</span> Point(currentX + <span class="number">1</span>, currentY), <span class="comment">// South</span></span><br><span class="line">            <span class="keyword">new</span> Point(currentX, currentY - <span class="number">1</span>), <span class="comment">// West</span></span><br><span class="line">            <span class="keyword">new</span> Point(currentX, currentY + <span class="number">1</span>)  <span class="comment">// East</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">solveMaze</span><span class="params">(<span class="keyword">int</span>[][] maze, List&lt;Point&gt; result, Point start, Point end)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = start.x;</span><br><span class="line">    <span class="keyword">int</span> y = start.y;</span><br><span class="line">    <span class="keyword">if</span> (x == end.x &amp;&amp; y == end.y) &#123;</span><br><span class="line">        result.add(start);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        result.add(start);</span><br><span class="line">        Point[] points = getPoints(start);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; points.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (isValidPoint(maze, points[i])</span><br><span class="line">                   &amp;&amp; hasNotAccess(result, points[i])</span><br><span class="line">                   &amp;&amp; solveMaze(maze, result, points[i], end)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        result.remove(start);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>其中isValidPoint()会判断是否越界或者遇上墙壁；而hasNotAccess()会判断节点是否被访问过，这么做可以防止<code>North -&gt; South -&gt; North ...</code>或者<code>East -&gt; West -&gt; East ...</code>的死循环。</p>
+<p>代码的思路就是把所有子节点转换成可以被for循环枚举，每走一步，以当前节点为父节点继续枚举（即向下遍历），直到遇到终点或者墙壁后回溯。其实，这段DFS代码的可以转换成一个n重循环。</p>
+<h3 id="4-2-不重复的字符的字符串"><a href="#4-2-不重复的字符的字符串" class="headerlink" title="4.2. 不重复的字符的字符串"></a>4.2. 不重复的字符的字符串</h3><p>其实这题不是LeetCode上的，是我从同学那里听说的。听完题目之后觉得挺有意思的，觉得用DFS可解，然后码了下代码，发现真的可以。<br>这道题是这么描述的：</p>
+<p>给定一个没有重复字符的字符串s，字符串的第i个字符用s<sub>i</sub>表示，即s = s<sub>1</sub>s<sub>2</sub>s<sub>3</sub>…s<sub>i</sub>…s<sub>n</sub><br>请给出k个不重复的，由s[1…n]组成的，没有重复字符，长度为n的字符串。<br>Example 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;Input:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s = “01234567”, k = 3<br>&nbsp;&nbsp;&nbsp;&nbsp;Output:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;”01234567”, “74625310”, “45367201”</p>
+<p>Example 2:<br>&nbsp;&nbsp;&nbsp;&nbsp;Input:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s =”abc”, k = 5<br>&nbsp;&nbsp;&nbsp;&nbsp;Output:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;”abc”, “bca”, “cba”, “acb”, “bac”</p>
+<p>给定的字符串s是一维的，明显不能直接用DFS来搜索。能使用DFS，数据必须是二维的。于是我们可以构造一个矩阵，矩阵就是二维的，以s = “abcd”为例，如下：<br><img src="/DFS/Matrix.jpg" title="构造矩阵"></p>
+<p>为什么我会想到构造一个矩阵出来？原因不难理解。前面我不断的说：<code>DFS代码可以转换成一个n重循环</code>。n重循环很好枚举，所以我就构造出一个4*4的矩阵，每一行都是s<br>这样我就能写成如下形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">for i in 0 ~ 3:</span><br><span class="line">    for j in 0 ~ 3: </span><br><span class="line">        for m in 0 ~ 3: </span><br><span class="line">            for n in 0 ~ 3: </span><br><span class="line">                rs = s[i] + s[j] + s[m] + s[n]</span><br><span class="line">            end</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>然后我就可以转成递归的形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for i in 0 ~ 3: </span><br><span class="line">    DFS(s, i)</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>转换成递归形式，可能就就不大容易看懂了，我们来看看这张图：<br><img src="/DFS/no_repeating_str_i_next_status.jpg" title="状态转移"><br>当我们走到了第<code>i</code>个字符串时，接下来该往<code>s1...sn</code>走，于是我们可以用循环来枚举。</p>
+<p>所以，相应的实现代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">bruteSearch</span><span class="params">(String[] targetCharMatrix, StringBuilder stringBuilder, List&lt;String&gt; result, <span class="keyword">int</span>[] accessFlag, <span class="keyword">int</span> depth)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (depth &lt; targetCharMatrix.length) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; targetCharMatrix[depth].length(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (accessFlag[i] != <span class="number">1</span>) &#123;</span><br><span class="line">                stringBuilder.append(targetCharMatrix[depth].charAt(i));</span><br><span class="line">                accessFlag[i] = <span class="number">1</span>;</span><br><span class="line">                bruteSearch(targetCharMatrix, stringBuilder, result, accessFlag, depth + <span class="number">1</span>);</span><br><span class="line">                accessFlag[i] = <span class="number">0</span>;</span><br><span class="line">                stringBuilder.deleteCharAt(stringBuilder.length() - <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        result.add(stringBuilder.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>先解释一下参数列表：<br>其中targetCharMatrix是根据s构造出来的矩阵；<br>stringBuilder是用来拼接字符的对象；<br>result是用来存放结果的对象；<br>accessFlag是存放访问结果，如果第i个元素为0则表示第i个字符还没被访问（拼接），否则如果为1则表明已经被访问（拼接）过；<br>depth表示已经拼接字符的个数。</p>
+<p>然后就是方法体：<br>首先判断是否超过最大深度，即<code>depth</code>是否等于4。<br>如果小于4：那就遍历<code>targetCharMatrix[depth][0...3]</code>。如果<code>targetCharMatrix[depth][i]</code>没被访问过，那就把<code>accessFlag[i]</code>置1，然后用<code>stringBuilder</code>把<code>targetCharMatrix[depth][i]</code>拼接进来，然后向下遍历，直至回溯回来后，将访问标志<code>accessFlag[i]</code>置0，把<code>targetCharMatrix[depth][i]</code>从<code>stringBuilder</code>中移除。</p>
+<p>否则，如果<code>depth</code>等于4：说明此时<code>stringBuilder.length() == 4</code>，那就把它加到结果<code>result</code>里就ok了。其实还是一个n重循环问题。</p>
+<p>其实，直接传一个矩阵(String[] targetCharMatrix)没有必要，因为这个矩阵的每行都一样。我们只需要传一个原字符串(即矩阵的任意一行)，再用depth来控制最大深度(矩阵的行数)就可以了。代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">bruteSearch</span><span class="params">(String targetChar, StringBuilder stringBuilder, List&lt;String&gt; result, <span class="keyword">int</span>[] accessFlag, <span class="keyword">int</span> depth)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (depth &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; targetChar.length(); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (accessFlag[i] != <span class="number">1</span>) &#123;</span><br><span class="line">                stringBuilder.append(targetChar.charAt(i));</span><br><span class="line">                accessFlag[i] = <span class="number">1</span>;</span><br><span class="line">                bruteSearch(targetChar, stringBuilder, result, accessFlag, depth - <span class="number">1</span>);</span><br><span class="line">                accessFlag[i] = <span class="number">0</span>;</span><br><span class="line">                stringBuilder.deleteCharAt(stringBuilder.length() - <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        result.add(stringBuilder.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-由两个问题所引发的思考"><a href="#5-由两个问题所引发的思考" class="headerlink" title="5. 由两个问题所引发的思考"></a>5. 由两个问题所引发的思考</h2><p>上面已经解释了，DFS可以写成n重循环的形式。所以DFS和n重循环有什么关系？<br>DFS的基本形式，就是一个循环内调用自身。即一个循环+递归的形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function DFS(graph, depth):</span><br><span class="line">    if depth &lt; maxDepth then</span><br><span class="line">        for i in 0 ~ graph.get(depth).length():</span><br><span class="line">            access(graph, depth)</span><br><span class="line">            DFS(graph, depth + 1)</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>如果<code>graph</code>是4*4的，如果调用<code>DFS(graph, 0)</code>，<br>那么第一层：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for i in 0 ~ 3:</span><br><span class="line">    if 0 &lt; 4 then</span><br><span class="line">        access(graph, 0)</span><br><span class="line">        DFS(graph, 0 + 1)</span><br><span class="line">        end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>第二层：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for i in 0 ~ 3:</span><br><span class="line">    if 1 &lt; 4 then</span><br><span class="line">        access(graph, 1)</span><br><span class="line">        DFS(graph, 1 + 1)</span><br><span class="line">        end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>第三层：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for i in 0 ~ 3:</span><br><span class="line">    if 2 &lt; 4 then</span><br><span class="line">        access(graph, 2)</span><br><span class="line">        DFS(graph, 2 + 1)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>第四层：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for i in 0 ~ 3:</span><br><span class="line">    if 3 &lt; 4 then</span><br><span class="line">        access(graph, 3)</span><br><span class="line">        DFS(graph, 3 + 1)</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>把第i层的<code>DFS(graph, (i - 1) + 1)</code>替换成第i + 1层的代码，可以得到：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">for i in 0 ~ 3:</span><br><span class="line">    if 0 &lt; 4 then</span><br><span class="line">        access(graph, 0)</span><br><span class="line">        for i in 0 ~ 3:</span><br><span class="line">            if 1 &lt; 4 then</span><br><span class="line">                access(graph, 1)</span><br><span class="line">                for i in 0 ~ 3:</span><br><span class="line">                    if 2 &lt; 4 then</span><br><span class="line">                        access(graph, 2)</span><br><span class="line">                        for i in 0 ~ 3:</span><br><span class="line">                            if 3 &lt; 4 then</span><br><span class="line">                                access(graph, 3)</span><br><span class="line">                                DFS(graph, 3 + 1)</span><br><span class="line">                            end</span><br><span class="line">                        end</span><br><span class="line">                    end</span><br><span class="line">                end</span><br><span class="line">            end</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">end</span><br></pre></td></tr></table></figure></p>
+<p>从上面可以看出，DFS本质就是一个n重循环，DFS自然可以用n重循环来表示。</p>
+<p>其实，观察每一层，每一层不一样的地方也就只有传的参数的值不同，也能看出这就是一个n重循环，有点像数学归纳法的递推。<br>还有就是，我上面不断的提<code>子结构</code>，其实我个人觉得能写成递归解决的问题，都很像数学中的分形。</p>
+<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h2><ol>
+<li>如果一个枚举问题，它的子结构共同组成该问题，就像上面提到的迷宫问题一样，每走一步后，可以上下左右走，这是一个子结构，共同组成原问题，那么这个问题就可以写成n重循环的形式。既然能够写成n重循环的形式，自然就能转化成递归的形式，就能用DFS的思想解决。</li>
+<li>如果一个枚举问题，它的子结构不能组成该问题，那我们就可以转化一下，如果能转化成让它可以由子结构组成，就像上面提到的不重复字符的字符串一样，一维的字符串自然没有子结构能够组成这个问题，那我们就构造一个矩阵，这样我们就能在递归深度为depth时，访问第1，第2 … 第n个元素，写成n重循环的形式，从而转化成递归进而用DFS的实现解决。</li>
+<li>DFS是解决枚举问题的基础，但不是所有问题都能照搬DFS的代码得到解决，需要具体情况具体分析。</li>
+</ol>
+<h2 id="7-感想"><a href="#7-感想" class="headerlink" title="7. 感想"></a>7. 感想</h2><p>在这之前，我对DFS的理解，也仅仅只是对二叉树的遍历。刷了一定量的题，我慢慢发现，只要给初始条件和停止条件，递归可以解决需要多重循环的问题，也就是DFS的实现。所以刷题还是有用的！想要对算法有理解还是要多刷题(不会可以看看Discussion，里面各路大神各种骚操作，都能解决问题)。就这样吧。如果本文有什么问题，请指教，共同进步，谢谢~！</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/DraggableFloatingActionButton/" rel="next" title="可拖拽的FloatingActionButton">
+                <i class="fa fa-chevron-left"></i> 可拖拽的FloatingActionButton
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/aidlInAndroid/" rel="prev" title="记一次AIDL的学习与实践">
+                记一次AIDL的学习与实践 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/myAvatar.jpeg"
+                alt="ZSpirytus" />
+            
+              <p class="site-author-name" itemprop="name">ZSpirytus</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zkw012300" title="GitHub &rarr; https://github.com/zkw012300" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:zhangwel261717@gmail.com" title="E-Mail &rarr; mailto:zhangwel261717@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.zhihu.com/people/zspi/activities" title="知乎 &rarr; https://www.zhihu.com/people/zspi/activities" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-深度优先搜索"><span class="nav-number">2.</span> <span class="nav-text">2. 深度优先搜索</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-DFS应该怎么用来遍历？"><span class="nav-number">3.</span> <span class="nav-text">3. DFS应该怎么用来遍历？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-两个问题"><span class="nav-number">4.</span> <span class="nav-text">4. 两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-迷宫问题"><span class="nav-number">4.1.</span> <span class="nav-text">4.1. 迷宫问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-不重复的字符的字符串"><span class="nav-number">4.2.</span> <span class="nav-text">4.2. 不重复的字符的字符串</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-由两个问题所引发的思考"><span class="nav-number">5.</span> <span class="nav-text">5. 由两个问题所引发的思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-总结"><span class="nav-number">6.</span> <span class="nav-text">6. 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-感想"><span class="nav-number">7.</span> <span class="nav-text">7. 感想</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZSpirytus</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v6.5.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '5fc5765877e740017870',
+          clientSecret: '7296b141cf164956d5fe98291c06b5945f9da3a8',
+          repo: 'zkw012300.github.io',
+          owner: 'zkw012300',
+          admin: ['zkw012300'],
+          id: location.pathname,
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              Counter('post', '/classes/Counter', JSON.stringify({ title: title, url: url, time: 1}))
+                .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(1);
+                })
+                .fail(function () {
+                  console.log('Failed to create');
+                });
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "JWTab0YdgMPzUX5Pz04JS9xg-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "JWTab0YdgMPzUX5Pz04JS9xg-gzGzoHsz",
+                'X-LC-Key': "siGukweQq85Q8HGzlRIcl1Vb",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
